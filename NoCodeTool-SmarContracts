@@ -1,0 +1,53 @@
+var code = ""
+
+var customFunc = ""
+
+var depo = "uint amountDeposited; function deposit() public payable{amountDeposited = msg.value;}"
+
+var contractName = "YourContractName";
+
+// Variables
+
+var varList = [];
+
+function addVars(varType, varName) {
+    var varStruct = {
+        type : "",
+        name : ""
+    }
+    varStruct.type = varType;
+    varStruct.name = varName;
+    console.log("varStruct is " + varStruct);
+    varList.push(varStruct);
+    console.log("your vars " + varList);
+    code = code + varType + varName;
+}
+
+function addLicPrag(contractName) {
+    code = "/*SPDX-License-Identifier: MIT*/ pragma solidity ^0.8.0; contract " + contractName + " { " 
+}
+
+function addDepoFunc() {
+    code = code + depo;
+
+}
+
+function addCustomFunc(name, addInputVar, addValueVar, equalTo) {
+    customFunc = "function " + name + "(" + addInputVar + ") public { " + equalTo + " = " + addValueVar + "}"
+    code = code + customFunc;
+}
+
+function closeContract() {
+    code = code + "}"
+    console.log("your contract is " + code);
+}
+
+
+/*
+
+addLicPrag();
+addDepoFunc();
+addCustomFunc("suma", "uint x", "x");
+closeContract();
+
+*/
