@@ -1,5 +1,7 @@
 var code = ""
 
+var last = ""
+
 var customFunc = ""
 
 var depo = "uint amountDeposited; function deposit() public payable{amountDeposited = msg.value;}"
@@ -11,13 +13,16 @@ var contractName = "YourContractName";
 // Ownership
 
 function addOwner(ownerAddress) {
-    code = code + " address owner = " + ownerAddress;
+    last = " address owner = " + ownerAddress + ";" + " modifier " + " onlyOwner() { " + "require(owner == msg.sender); _; } "
+    code = code + " address owner = " + ownerAddress + ";";
     code = code + " modifier " + " onlyOwner() { " + "require(owner == msg.sender); _; } "
 }
 
 // Variables
 
 var varList = [];
+
+var varType = "";
 
 function addVars(varType, varName) {
     var varStruct = {
@@ -27,13 +32,47 @@ function addVars(varType, varName) {
     }
     varStruct.type = varType;
     varStruct.name = varName;
-    console.log("varStruct is " + varStruct);
     varList.push(varStruct);
-    console.log("your vars " + varList);
+    last = " " + varType + " " + varName + ";";
     code = code + " " + varType + " " + varName + ";";
+    writeCode();
+    goTwo()
+    document.getElementById("varName").value = "";
 }
 
-'struct myStructName { address myAddress; string myString; uint16 myNumber;}stringmemory;'
+function addNewUint() {
+    varType = "uint";
+    document.getElementById("uintBut").style.opacity = "100%";
+    document.getElementById("stringBut").style.opacity = "60%";
+    document.getElementById("boolBut").style.opacity = "60%";
+    document.getElementById("addrBut").style.opacity = "60%";
+}
+
+function addNewStr() {
+    varType = "string";
+    document.getElementById("uintBut").style.opacity = "60%";
+    document.getElementById("stringBut").style.opacity = "100%";
+    document.getElementById("boolBut").style.opacity = "60%";
+    document.getElementById("addrBut").style.opacity = "60%";
+}
+
+function addNewBool() {
+    varType = "bool";
+    document.getElementById("uintBut").style.opacity = "60%";
+    document.getElementById("stringBut").style.opacity = "60%";
+    document.getElementById("boolBut").style.opacity = "100%";
+    document.getElementById("addrBut").style.opacity = "60%";
+}
+
+function addNewAddress() {
+    varType = "address";
+    document.getElementById("uintBut").style.opacity = "60%";
+    document.getElementById("stringBut").style.opacity = "60%";
+    document.getElementById("boolBut").style.opacity = "60%";
+    document.getElementById("addrBut").style.opacity = "100%";
+}
+
+// 'struct myStructName { address myAddress; string myString; uint16 myNumber;}string memory;'
 
 //________________________________________________
 // Structs
@@ -61,15 +100,23 @@ function addStruct (sName) {
 //________________________________________________
 
 function addLicPrag(contractName) {
+    last = "/*SPDX-License-Identifier: MIT*/ pragma solidity ^0.8.0; contract " + contractName + " { " ;
     code = "/*SPDX-License-Identifier: MIT*/ pragma solidity ^0.8.0; contract " + contractName + " { " ;
     writeCode();
     next1();
 }
 
 function addDepoFunc() {
+    last = depo;
     code = code + depo;
     writeCode();
     goTwo();
+}
+
+function deleteLast() {
+    var escapedLast = last.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
+    code = code.replace(new RegExp(escapedLast, 'g'), "");
+    writeCode();
 }
 
 function addWithdS(address) {  
@@ -79,11 +126,67 @@ function addWithdS(address) {
     goTwo();
 }
 
-function addCustomFunc(name, addInputVar, addValueVar, equalTo) {
-    customFunc = "function " + name + "(" + addInputVar + ") public { " + equalTo + " = " + addValueVar + ";" + "}"
+// CUSTOM_____
+
+function addCustomFunc(name, funcType, funcVisib,) {
+    //customFunc = "function " + name + "(" + addInputVar + ") public { " + equalTo + " = " + addValueVar + ";" + "}"
+    customFunc = "function " + name + " (" ;
+
+    for (var i = 0; i < funcInputs.length; i++) {
+        if(i == funcInputs.length - 1) {
+         customFunc = customFunc + funcInputs[i];
+        } else {customFunc = customFunc + funcInputs[i] + ", "}
+    }
+    
+    customFunc = customFunc + ")" + funcVisib + funcType;
+
     code = code + customFunc;
     writeCode();
 }
+
+var funcInputs = [];
+
+var mType = "";
+
+function setType(type) {
+    mType = type;
+}
+
+function addInputF(inpType, inpName) {
+    var fullInput;
+    if (inpType == "string"){
+        fullInput = inpType + " memory " + inpName;
+    } else {
+        fullInput = inpType + " " + inpName;
+    }
+    funcInputs.push(fullInput);
+    var yourInput = document.createElement("div");
+    var div = document.getElementById("fInpD");
+    if(inpType == "uint"){
+        yourInput.classList.add("myUint");
+        yourInput.innerText = fullInput;
+    } else if(inpType == "string") {
+        yourInput.classList.add("myStr");
+        yourInput.innerText = inpType + " " + inpName;
+    } else if(inpType == "bool") {
+        yourInput.classList.add("myBool");
+        yourInput.innerText = fullInput;
+    } else if(inpType == "address") {
+        yourInput.classList.add("myAddr");
+        yourInput.innerText = fullInput;
+    }
+    
+    div.appendChild(yourInput);
+    var container = document.getElementById('fInpD');
+    container.scrollLeft = container.scrollWidth; 
+    document.getElementById("inpNameFunc").value = "";
+}
+
+
+//_______
+
+
+
 
 function closeContract() {
     code = code + "}"
@@ -94,11 +197,12 @@ function closeContract() {
 //Front _______________________________________
 
 var text = document.getElementById("myCode");
+var ide = document.getElementById("ide");
 
 function writeCode() {
     text.innerText = "";
     text.innerText = code;
-    text.scrollTop = text.scrollHeight;
+    ide.scrollTop = ide.scrollHeight;
 }
 
 function next1(){
@@ -116,8 +220,62 @@ function goConfig2(){
     document.getElementById("config2").style.display = "block";
 }
 
+function goVars() {
+    document.getElementById("vars").style.display = "block";
+    document.getElementById("two").style.display = "none";
+
+}
+
+function goCustom() {
+    document.getElementById("customFuncDiv").style.display = "block";
+    document.getElementById("two").style.display = "none";
+
+}
+
 function goTwo(){
+    document.getElementById("vars").style.display = "none";
     document.getElementById("config1").style.display = "none";
     document.getElementById("config2").style.display = "none";
+    document.getElementById("customFuncDiv").style.display = "none";
     document.getElementById("two").style.display = "block";
+    document.getElementById("uintBut").style.opacity = "100%";
+    document.getElementById("stringBut").style.opacity = "100%";
+    document.getElementById("boolBut").style.opacity = "100%";
+    document.getElementById("addrBut").style.opacity = "100%";
+}
+
+function copy() {
+    navigator.clipboard.writeText(code)
+    alert("Contract Copied, go to remix and test it!")
+}
+
+function makeElementEditable() {
+    var element = document.getElementById("myCode");
+    element.contentEditable = "true";
+    document.getElementById("edit").style.display = "none";
+    document.getElementById("cancel").style.display = "block";
+    document.getElementById("approve").style.display = "block";
+  }
+
+function makeElementNotEditable() {
+    var element = document.getElementById("myCode");
+      element.contentEditable = "false";
+  }
+
+function approveEditCodeMan() {
+    var element = document.getElementById("myCode");
+    code = element.innerText;
+    makeElementNotEditable();
+    document.getElementById("edit").style.display = "block";
+    document.getElementById("cancel").style.display = "none";
+    document.getElementById("approve").style.display = "none";
+}
+
+function cancelEditCodeMan() {
+    var element = document.getElementById("myCode");
+    element.innerText = code;
+    makeElementNotEditable();
+    document.getElementById("edit").style.display = "block";
+    document.getElementById("cancel").style.display = "none";
+    document.getElementById("approve").style.display = "none";
 }
