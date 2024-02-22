@@ -10,7 +10,7 @@ var withd = "function withdrawEth() public onlyOwner { address payable to = paya
 
 var contractName = "YourContractName";
 
-// Ownership
+// Ownership 
 
 function addOwner(ownerAddress) {
     last = " address owner = " + ownerAddress + ";" + " modifier " + " onlyOwner() { " + "require(owner == msg.sender); _; } "
@@ -128,7 +128,31 @@ function addWithdS(address) {
 
 // CUSTOM_____
 
-function addCustomFunc(name, funcType, funcVisib,) {
+var funcType = "";
+
+function setModFunc() {
+    funcType = "mod"
+}
+
+function setModFunc() {
+    funcType = "read"
+}
+
+var returnVar = "";
+
+function setReturnUint() {
+    returnVar = "uint";
+}
+
+function setReturnString() {
+    returnVar = "string";
+}
+
+function setReturnBool() {
+    returnVar = "bool";
+}
+
+function addCustomFunc(name) {
     //customFunc = "function " + name + "(" + addInputVar + ") public { " + equalTo + " = " + addValueVar + ";" + "}"
     customFunc = "function " + name + " (" ;
 
@@ -138,19 +162,52 @@ function addCustomFunc(name, funcType, funcVisib,) {
         } else {customFunc = customFunc + funcInputs[i] + ", "}
     }
     
-    customFunc = customFunc + ")" + funcVisib + funcType;
+    customFunc = customFunc + ")";
+
+    if (funcType == "mod"){
+        customFunc = customFunc + "{"
+        for(var i = 0; i < myFuncVarList.length-1; i++){
+            customFunc = customFunc + myFuncVarList[i].type2 + " " + myFuncVarList[i].name2;
+        }
+
+        customFunc = customFunc + algo;
+
+    } else if(funcType == "read") {
+        customFunc = customFunc + "view returns (" + returnVar + ") { ";
+        for(var i = 0; i < myFuncVarList.length-1; i++){
+            customFunc = customFunc + myFuncVarList[i].type2 + " " + myFuncVarList[i].name2;
+        }
+
+        customFunc = customFunc + algo;
+        //___
+        customFunc = customFunc + "return (" + "" + "}";
+    }
+
+
 
     code = code + customFunc;
     writeCode();
 }
 
-var funcInputs = [];
+var algo = ""; // 
 
-var mType = "";
+function setAlgo() {
 
-function setType(type) {
-    mType = type;
 }
+
+var myFuncVarList = [];
+
+function addLocalVars(name2, type2) {
+    var newVar = {
+        name2: "",
+        type2: ""
+    };
+
+    myFuncVarList.push(newVar);
+    
+}
+
+var funcInputs = [];
 
 function addInputF(inpType, inpName) {
     var fullInput;
@@ -279,3 +336,50 @@ function cancelEditCodeMan() {
     document.getElementById("cancel").style.display = "none";
     document.getElementById("approve").style.display = "none";
 }
+
+var actTextSize = 25;
+
+function bigText() {
+    
+    var textSize = document.getElementById("ide");
+    console.log("now Text " + textSize.style.fontSize);
+
+    var newSize = actTextSize;
+    newSize += 2;
+    newSize.toString();
+    newSize + "px"
+
+    textSize.style.fontSize = newSize;
+    
+    console.log("Bigger Text " + textSize.style.fontSize);
+
+}
+
+
+
+// Hacer la parte "Gamificada" como academia para quien quiera aprender
+/*
+
+!!! para enseñar:
+
+- Variables: Declarar Variables :
+                        - uint
+                        - string
+                        - bool
+- modificar variables con funciones
+- leer variables con funciones
+
+- variables complejas: 
+                    - array
+                    - mapping
+                    - structs
+
+- modificar variables complejas con con funciones
+- leer datos de una variable compleja
+
+- modificadores y constructor
+- algoritomos: If && for
+
+llamar a otras funciones desde una funcion
+
+*/
